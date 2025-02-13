@@ -102,6 +102,7 @@ class TrajLOdometry {
   // backend thread
 //  bool initialized_;
   std::shared_ptr<std::thread> processing_thread_;
+  bool first_time = true;
 };
 
 }  // namespace traj

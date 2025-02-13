@@ -26,22 +26,24 @@ SOFTWARE.
 #include <trajlo/gui/visualizer.h>
 #include <trajlo/io/data_loader.h>
 #include <trajlo/utils/config.h>
+#include <trajlo/core/odom_manager.h>
 
 #include <thread>
 
 int main(int argc, char *argv[]) {
   std::cout << "Hello Traj-LO Project!\n";
 
-  if (argc < 2) {
-    std::cerr << "Usage: " << argv[0] << " <config_path>" << std::endl;
+  if (argc < 3) {
+    std::cerr << "Usage: " << argv[0] << " <config_path> <rosbag_path>" << std::endl;
     return 1;
   }
 
   std::string config_path = argv[1];
+  std::string bag_path = argv[2];
 
   traj::TrajConfig config;
   config.load(config_path);
-
+  config.dataset_path = bag_path;
   traj::TrajLOdometry::Ptr trajLOdometry(new traj::TrajLOdometry(config));
   traj::DataLoader::Ptr dataLoader = nullptr;
   std::thread t_io;
@@ -49,11 +51,14 @@ int main(int argc, char *argv[]) {
   t_io = std::thread(&traj::DataLoader::publish, dataLoader,
                      config.dataset_path, config.topic);
 
-  traj::Visualizer::Ptr visualizer(
-      new traj::Visualizer(trajLOdometry, config, dataLoader));
-  std::cout << "Wait data input..............\n";
-
-  { visualizer->mainLoop(); }
+  // traj::Visualizer::Ptr visualizer(
+      // new traj::Visualizer(trajLOdometry, config, dataLoader));
+  // std::cout << "Wait data input..............\n";
+  traj::OdomManager odomManager(trajLOdometry, config, dataLoader);
+  {
+    odomManager.mainloop();
+  }
+  // { visualizer->mainLoop(); }
 
   t_io.join();
 

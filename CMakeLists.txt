@@ -43,6 +43,8 @@ include_directories(include)
 add_definitions("-D SOPHUS_USE_BASIC_LOGGING")
 include_directories(thirdparty/Sophus)
 
+find_package(Eigen3 REQUIRED)
+
 add_executable(trajlo run_trajlo.cpp
         src/io/data_loader.cpp
         src/utils/config.cpp
@@ -50,6 +52,7 @@ add_executable(trajlo run_trajlo.cpp
         src/gui/glad.c
         src/core/odometry.cpp
         src/core/map_manager.cpp
+        src/core/odom_manager.cpp
 )
 target_link_libraries(trajlo PUBLIC
         yaml-cpp::yaml-cpp

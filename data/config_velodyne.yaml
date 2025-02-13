@@ -4,8 +4,8 @@
 # Traj-LO is a lidar-only method, so it may fail in the narrow space when there is few valid point to get geometric constrain.
 dataset:
   data_type: "bag_velodyne"
-  topic: "/velodyne_points"
-  path: "/home/zx/Data/Disk2/ICCV2023-LIO-Challenage/SubT_MRS_Final_Challenge_UGV1/subset.bag"
+  topic: "/velodyne_packets"
+  path: "/home/run/learn2calib_experiment/licalib-data/pcl2data.bag"
   save_pose: true
   pose_file_path: "estimated_pose.txt"
 

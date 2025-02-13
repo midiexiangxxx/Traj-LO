@@ -27,6 +27,7 @@ SOFTWARE.
 
 #include <fstream>
 #include <iomanip>
+#include <filesystem>
 
 uint64_t getCurrTime() {
   return std::chrono::duration_cast<std::chrono::microseconds>(
@@ -129,17 +130,17 @@ void TrajLOdometry::Start() {
           Marginalize();
 
           // map & trajectory visualization
-          if (vis_data_queue &&
-              ((frame_id / config_.seg_num) % (config_.frame_num) == 0)) {
-            ScanVisData::Ptr visData(new ScanVisData);
-
-            posePair pp{frame_poses_[tp.first].getPose(),
-                        frame_poses_[tp.second].getPose()};
-            UndistortRawPoints(measure->points, visData->data, pp);
-
-            visData->T_w = config_.T_vis_lidar*pp.first;
-            vis_data_queue->push(visData);  // may block the thread
-          }
+          // if (vis_data_queue &&
+              // ((frame_id / config_.seg_num) % (config_.frame_num) == 0)) {
+            // ScanVisData::Ptr visData(new ScanVisData);
+// 
+            // posePair pp{frame_poses_[tp.first].getPose(),
+                        // frame_poses_[tp.second].getPose()};
+            // UndistortRawPoints(measure->points, visData->data, pp);
+// 
+            // visData->T_w = config_.T_vis_lidar*pp.first;
+            // vis_data_queue->push(visData);  // may block the thread
+          // }
         }
         frame_id++;
       }
@@ -155,8 +156,10 @@ void TrajLOdometry::Start() {
     // Here, you can save the trajectory for comparison
     if(config_.save_pose){
       std::cout << "Start Pose Saving!" << std::endl;
-      std::ofstream os(config_.pose_file_path);
-      os << "# timestamp tx ty tz qx qy qz qw" << std::endl;
+      auto output_file = std::filesystem::path(config_.dataset_path).replace_extension(".tum").string();
+      std::ofstream os(output_file);
+      std::cout << "dumping lidar_traj to " << output_file << std::endl;
+      // os << "# timestamp tx ty tz qx qy qz qw" << std::endl;
 
       for(const auto& p:trajectory_){
         Sophus::SE3d pose_body=config_.T_body_lidar*p.second*config_.T_body_lidar.inverse();
@@ -176,10 +179,13 @@ void TrajLOdometry::Start() {
     }
 
     isFinish = true;
-    std::cout << "Finisher LiDAR Odometry " << std::endl;
+    std::cout << "Finish LiDAR Odometry " << std::endl;
   };
-
-  processing_thread_.reset(new std::thread(lo_func));
+  if(!first_time) 
+    while (processing_thread_->joinable() && !isFinish);
+  first_time = false;
+  if(!isFinish)
+    processing_thread_.reset(new std::thread(lo_func));
 }
 
 /*

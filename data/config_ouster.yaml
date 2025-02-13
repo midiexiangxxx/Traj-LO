@@ -2,8 +2,8 @@
 # support Dataset: Hilti 2021, New College, NTU VIRAL
 dataset:
   data_type: "bag_ouster"
-  topic: "/os_cloud_node/points"
-  path: "/home/zx/Data/Disk2/hilti-2021/Campus_2.bag"
+  topic: "/os1_cloud_node1/points"
+  path: "/home/run/learn2calib_experiment/ntu_viral/eee_01/eee_01_calib.bag"
   save_pose: true
   pose_file_path: "estimated_pose.txt"
 

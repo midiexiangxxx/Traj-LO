@@ -3,7 +3,8 @@
 dataset:
   data_type: "bag_livox"
   topic: "/livox/lidar"
-  path: "/home/zx/Data/Disk1/r3live/hkust_campus_seq_01.bag"
+  path: "/home/run/learn2calib_experiment/mid360-xsens/courtyard1/chunk_0.bag"
+  #  path: "/home/run/extra_/HolybroStdn01.bag"
   save_pose: true
   pose_file_path: "estimated_pose.txt"
 
